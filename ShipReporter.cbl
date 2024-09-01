@@ -2,15 +2,35 @@
 000001 IDENTIFICATION DIVISION.
        PROGRAM-ID. REPORTER.
        AUTHOR. VEGA.
+
        ENVIRONMENT DIVISION.
        CONFIGURATION SECTION.
        INPUT-OUTPUT SECTION.
        FILE-CONTROL.
-           SELECT UVMF
-           ASSIGN TO '.\UVMF.DAT'
+           SELECT UVMF ASSIGN TO '.\UVMF.DAT'
+           ORGANIZATION IS SEQUENTIAL
+           ACCESS MODE IS SEQUENTIAL
+           FILE STATUS IS [WHAT?].
+
+           SELECT RPRT ASSIGN TO '.\SHIPS.RPT'
+           ORGANIZATION IS SEQUENTIAL
+           ACCESS MODE IS SEQUENTIAL.
       *unsure if cobol will allow using a local ref. we'll see.
+
        DATA DIVISION.
-      
+       FILE SECTION.
+       FD RPRT
+           DATA RECORD IS RPRT-RECORD.
+       01 RPRT-RECORD.
+          05 LOC-NAME     PIC X(13).
+          05 VESS-FUNC     PIC X(20).
+          05 VESS-NAME     PIC X(09).
+          05 TONNAGE     PIC 9(06).
+          05 CREW     PIC 9(05).
+          05 COST-MONT     PIC 9(06).
+      * this is about how i think the records i print to the file will be formatted.
+      * to suppress repeat location names and functions, i think i'll insert spaces
+      * for each round after that isnt a dif place or function
        PROCEDURE DIVISION.
 
       *must print location name, vessel function, vessel name, tonnage, 
@@ -38,9 +58,14 @@
            PERFORM HEADER
            PERFORM LOOPER
            STOP RUN.
-       HEADER.
-      * This will print the top of the form.
 
+       HEADER.
+      * Open the output file
+           OPEN OUTPUT RPRT.
+           INITIALIZE RPRT-RECORD.
+           WRITE RPRT-RECORD.
+          
+       
        LOOPER.
       * This will print each of the ships data, grouped by area.
        END PROGRAM REPORTER.
